@@ -1,3 +1,4 @@
+Elapsed_Time,Left_Stride_Interval,Right_Stride_Interval,Left_Swing_Interval,Right_Swing_Interval,Left_Swing_Interval_Percent,Right_Swing_Interval_Percent,Left_Stance_Interval,Right_Stance_Interval,Left_Stance_Interval_Percent,Right_Stance_Interval_Percent,Double_Support_Interval_Sec,Double_Support_Interval_Percent
 21.5167,0.9033,0.88,0.3567,0.3567,39.48,40.53,0.5467,0.5233,60.52,59.47,0.19,21.03
 22.3733,0.8567,0.8933,0.34,0.3367,39.69,37.69,0.5167,0.5567,60.31,62.31,0.18,21.01
 23.3233,0.95,0.9,0.38,0.3767,40.0,41.85,0.57,0.5233,60.0,58.15,0.1933,20.35
