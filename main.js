@@ -83,6 +83,26 @@ function drawLineChart() {
         .style("font-size", "14px")
         .text("Left Stride Interval (seconds)");
 
+    // Adding title
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", margin.top / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", "18px")
+        .style("font-weight", "bold")
+        .text("Left Stride Interval vs. Elapsed Time by Group");
+
+    // Adding question
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", margin.top / 2 + 20)  
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-style", "italic")
+        .text("How do Left Stride Intervals vary over time across different groups?");
+
+
+
     // Add legend
     const legend = svg.append("g")
         .attr("transform", `translate(${width - 120}, 50)`);
