@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gait Data Visualization</title>
+    <title>Gait Analysis Visualization</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
-        svg {
-            border: 1px solid #ccc;
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
+    <div class="container">
+        <h1 class="title">How Do Neurodegenerative Diseases Affect Your Walking Pace?</h1>
+        <div class="visualization" id="chart"></div>
 
-    <h1>Gait Data Visualization</h1>
-    <div id="chart"></div>
+        <div class="timeline-slider">
+            <input type="range" id="timelineSlider" min="0" value="0">
+        </div>
+
+        <div class="controls">
+            <button id="playPauseBtn">Play/Pause</button>
+            <div class="metric-card">
+                <div class="metric-title">Elapsed Time</div>
+                <div class="metric-value" id="elapsedTimeMetric">-</div>
+            </div>
+        </div>
 
     <script src="main.js"></script>
-
 </body>
 </html>
