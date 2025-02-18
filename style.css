@@ -107,12 +107,12 @@ select {
 }
 
 #playPauseBtn {
-    background-color: #4CAF50; /* Green for play/pause */
+    background-color: #4CAF50; 
     color: white;
 }
 
 #resetZoomBtn {
-    background-color: #f44336; /* Red for reset zoom */
+    background-color: #f44336; 
     color: white;
 }
 

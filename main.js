@@ -56,14 +56,20 @@ function drawLineChart() {
         .attr("width", width)
         .attr("height", height);
 
+    svg.append("defs").append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("x", margin.left)
+        .attr("y", margin.top)
+        .attr("width", width - margin.right - margin.left)
+        .attr("height", height - margin.top - margin.bottom);
+
     const g = svg.append("g");
 
-    zoom = d3.zoom()
-        .scaleExtent([1, 10]) 
-        .translateExtent([[0, 0], [width, height]]) 
-        .on("zoom", zoomed);
-
-    svg.call(zoom);
+    const xAxisGroup = g.append("g").attr("class", "x-axis");
+    const yAxisGroup = g.append("g").attr("class", "y-axis");
+    const dataGroup = g.append("g")
+        .attr("clip-path", "url(#clip)");
 
     const xScale = d3.scaleLinear()
         .domain([
@@ -79,21 +85,83 @@ function drawLineChart() {
         ])
         .range([height - margin.bottom, margin.top]);
 
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
+
+    let currentTransform = d3.zoomIdentity;
+
+    function zoomed(event) {
+        currentTransform = event.transform;
+        
+        const newXScale = currentTransform.rescaleX(xScale);
+        const newYScale = currentTransform.rescaleY(yScale);
+
+        xAxisGroup.attr("transform", `translate(0,${height - margin.bottom})`)
+            .call(xAxis.scale(newXScale));
+        yAxisGroup.attr("transform", `translate(${margin.left},0)`)
+            .call(yAxis.scale(newYScale));
+
+        paths.forEach(path => {
+            const data = path.datum();
+            const line = d3.line()
+                .x(d => newXScale(d.Elapsed_Time))
+                .y(d => newYScale(d.Left_Stride_Interval))
+                .curve(d3.curveLinear);
+
+            path.attr("d", line(data));
+            
+            const totalLength = path.node().getTotalLength();
+            const progress = timelineSlider.value / 100;
+            const offset = progress * totalLength;
+            
+            path.attr("stroke-dasharray", `${totalLength} ${totalLength}`)
+                .attr("stroke-dashoffset", totalLength - offset);
+        });
+    }
+
+    zoom = d3.zoom()
+        .scaleExtent([1, 20])
+        .translateExtent([
+            [margin.left, margin.top],
+            [width - margin.right, height - margin.bottom]
+        ])
+        .extent([
+            [margin.left, margin.top],
+            [width - margin.right, height - margin.bottom]
+        ])
+        .on("zoom", zoomed);
+
+    svg.call(zoom);
+
+    zoom = d3.zoom()
+        .scaleExtent([1, 20])
+        .translateExtent([
+            [margin.left, margin.top],
+            [width - margin.right, height - margin.bottom]
+        ])
+        .extent([
+            [margin.left, margin.top],
+            [width - margin.right, height - margin.bottom]
+        ])
+        .on("zoom", zoomed);
+
+    svg.call(zoom);
+
     const color = d3.scaleOrdinal(d3.schemeCategory10).domain(files);
 
     const tooltip = d3.select("body").append("div")
-    .attr("id", "tooltip")
-    .style("position", "absolute")
-    .style("background", "lightgray")
-    .style("padding", "5px")
-    .style("border-radius", "5px")
-    .style("display", "none");
+        .attr("id", "tooltip")
+        .style("position", "absolute")
+        .style("background", "lightgray")
+        .style("padding", "5px")
+        .style("border-radius", "5px")
+        .style("display", "none");
 
     const fileToGroup = {
-      "als1.csv": "ALS",
-      "control1.csv": "Control",
-      "hunt1.csv": "Huntington",
-      "park1.csv": "Parkinson"
+        "als1.csv": "ALS",
+        "control1.csv": "Control",
+        "hunt1.csv": "Huntington",
+        "park1.csv": "Parkinson"
     };
 
     function updateTooltipVisibility(isVisible) {
@@ -114,25 +182,29 @@ function drawLineChart() {
     paths = Object.keys(allData).map(file => {
         const line = d3.line()
             .x(d => xScale(d.Elapsed_Time))
-            .y(d => yScale(d.Left_Stride_Interval));
+            .y(d => yScale(d.Left_Stride_Interval))
+            .curve(d3.curveLinear);
 
-        const path = g.append("path")
+        const path = dataGroup.append("path")
             .datum(allData[file])
             .attr("fill", "none")
             .attr("stroke", color(file))
             .attr("stroke-width", 2)
             .attr("d", line)
             .on("mousemove", function(event) {
-                const [x] = d3.pointer(event, this);
+                const [x] = d3.pointer(event);
+                const xValue = currentTransform.rescaleX(xScale).invert(x + margin.left);
                 const closestData = allData[file].reduce((prev, curr) => 
-                    Math.abs(xScale(curr.Elapsed_Time) - x) < Math.abs(xScale(prev.Elapsed_Time) - x) ? curr : prev
+                    Math.abs(curr.Elapsed_Time - xValue) < Math.abs(prev.Elapsed_Time - xValue) ? curr : prev
                 );
+
                 const lineColor = color(file);
                 updateTooltipContent(closestData, lineColor, file);
                 updateTooltipVisibility(true);
                 updateTooltipPosition(event);
+
             })
-            .on("mouseout", () => updateTooltipVisibility(false));
+            .on("mouseout", () => tooltip.style("display", "none"));
 
         const length = path.node().getTotalLength();
         path.attr("stroke-dasharray", `${length} ${length}`)
@@ -141,13 +213,11 @@ function drawLineChart() {
         return path;
     });
 
-    g.append("g")
-        .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(xScale));
+    xAxisGroup.attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(xAxis);
 
-    g.append("g")
-        .attr("transform", `translate(${margin.left},0)`)
-        .call(d3.axisLeft(yScale));
+    yAxisGroup.attr("transform", `translate(${margin.left},0)`)
+        .call(yAxis);
 
     g.append("text")
         .attr("class", "x-axis-label")
@@ -167,7 +237,7 @@ function drawLineChart() {
         .text("Left Stride Interval (s)");
 
     const legend = svg.append("g")
-    .attr("transform", `translate(${width - margin.right + 20}, ${margin.top})`);
+        .attr("transform", `translate(${width - margin.right + 20}, ${margin.top})`);
 
     files.forEach((file, index) => {
         const legendRow = legend.append("g")
@@ -181,7 +251,7 @@ function drawLineChart() {
         legendRow.append("text")
             .attr("x", 20)
             .attr("y", 12)
-            .text(file)
+            .text(fileToGroup[file])
             .attr("font-size", "12px")
             .attr("fill", "black");
     });
@@ -190,14 +260,15 @@ function drawLineChart() {
     playPauseBtn.addEventListener('click', toggleAnimation);
 
     d3.select(".controls").append("button")
-      .attr("id", "resetZoomBtn")
-      .text("Reset Zoom")
-      .on("click", () => svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity));
-
-  function zoomed(event) {
-    g.attr("transform", event.transform);
-  }
+        .attr("id", "resetZoomBtn")
+        .text("Reset Zoom")
+        .on("click", () => {
+            svg.transition()
+                .duration(750)
+                .call(zoom.transform, d3.zoomIdentity);
+        });
 }
+
 
 function resetAnimation() {
   timelineSlider.value = 0;
