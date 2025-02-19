@@ -47,7 +47,7 @@ function manualSliderUpdate() {
 function drawLineChart() {
     d3.select("#chart").html("");
 
-    const width = 1100;
+    const width = 1000;
     const height = 500;
     const margin = { top: 50, right: 150, bottom: 70, left: 80 };
 
@@ -264,9 +264,9 @@ function drawLineChart() {
     legend.append("text")
     .attr("x", 0)
     .attr("y", -10) 
-    .attr("font-size", "11px")
+    .attr("font-size", "14px")
     .attr("font-weight", "bold")
-    .text("Click to Filter by Groups");
+    .text("Click Below to Filter by Groups");
 
     let visibilityState = {};
 
