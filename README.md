@@ -1,4 +1,4 @@
-# Interactive Data Visualization of Gait Differences in Neurodegenerative Diseases
+# Gait Differences in Neurodegenerative Diseases
 
 ## Overview
 
