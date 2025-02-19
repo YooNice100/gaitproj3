@@ -302,7 +302,7 @@ function drawLineChart() {
         .attr("x", 20)
         .attr("y", 12)
         .text(fileToGroup[file])
-        .attr("font-size", "10px")
+        .attr("font-size", "12px")
         .attr("fill", "black");
     });
 
