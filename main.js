@@ -12,6 +12,14 @@ let elapsedPausedTime = 0;
 const timelineSlider = document.getElementById("timelineSlider");
 let zoom;
 
+const colorMapping = {
+    "als1.csv": "#1f77b4",    // blue
+    "hunt2.csv": "#ff7f0e",   // orange
+    "control1.csv": "#2ca02c", // green
+    "park3.csv": "#d62728"     // red
+};
+
+
 Promise.all(
     files.map(file =>
         d3.csv(`${folder}${file}`, d3.autoType).then(data => {
@@ -147,7 +155,7 @@ function drawLineChart() {
 
     svg.call(zoom);
 
-    const color = d3.scaleOrdinal(d3.schemeCategory10).domain(files);
+    // const color = d3.scaleOrdinal(d3.schemeCategory10).domain(files);
 
     const tooltip = d3.select("body").append("div")
         .attr("id", "tooltip")
@@ -200,8 +208,8 @@ function drawLineChart() {
         .attr("y2", d => yScale(d))
         .attr("stroke", "lightgray")
         .attr("stroke-dasharray", "2,2");
-
-    paths = Object.keys(allData).map(file => {
+    const pathsByFile = {};
+    paths = files.map(file => {
         const line = d3.line()
             .x(d => xScale(d.Elapsed_Time))
             .y(d => yScale(d.Left_Stride_Interval))
@@ -210,28 +218,28 @@ function drawLineChart() {
         const path = dataGroup.append("path")
             .datum(allData[file])
             .attr("fill", "none")
-            .attr("stroke", color(file))
+            .attr("stroke", colorMapping[file])
             .attr("stroke-width", 2)
             .attr("d", line)
+            .attr("data-file", file)
             .on("mousemove", function(event) {
                 const [x] = d3.pointer(event);
                 const xValue = currentTransform.rescaleX(xScale).invert(x + margin.left);
                 const closestData = allData[file].reduce((prev, curr) => 
                     Math.abs(curr.Elapsed_Time - xValue) < Math.abs(prev.Elapsed_Time - xValue) ? curr : prev
                 );
-
-                const lineColor = color(file);
-                updateTooltipContent(closestData, lineColor, file);
-                updateTooltipVisibility(true);
-                updateTooltipPosition(event);
-
+                tooltip.html(`
+                    <strong>${fileToGroup[file]}</strong><br>Elapsed Time: ${closestData.Elapsed_Time.toFixed(2)}s<br>Left Stride Interval: ${closestData.Left_Stride_Interval.toFixed(3)}s`)
+                .style("display", "block")
+                .style("left", `${event.pageX + 10}px`)
+                .style("top", `${event.pageY - 20}px`);
             })
             .on("mouseout", () => tooltip.style("display", "none"));
 
         const length = path.node().getTotalLength();
         path.attr("stroke-dasharray", `${length} ${length}`)
             .attr("stroke-dashoffset", length);
-
+        pathsByFile[file] = path;
         return path;
     });
 
@@ -268,7 +276,7 @@ function drawLineChart() {
     .attr("font-weight", "bold")
     .text("Click Below to Filter by Groups");
 
-    let visibilityState = {};
+    let visibilityState = Object.fromEntries(files.map(file => [file, true]));
 
     files.forEach((file, index) => {
         visibilityState[file] = true; 
@@ -277,22 +285,20 @@ function drawLineChart() {
     .attr("transform", `translate(0, ${index * 20})`)
     .style("cursor", "pointer")
     .on("click", function() {
-        visibilityState[file] = !visibilityState[file]; 
-
-        const path = paths[index];
-        if (visibilityState[file]) {
-            path.style("display", null);
-        } else {
-            path.style("display", "none");
-        }
-
+        visibilityState[file] = !visibilityState[file];
+        const path = pathsByFile[file];
+        path.style("display", visibilityState[file] ? null : "none");
         legendText.style("opacity", visibilityState[file] ? 1 : 0.5);
+        d3.select(this).select("rect")
+
+            .style("opacity", visibilityState[file] ? 1 : 0.5);
+
     });
 
     legendRow.append("rect")
         .attr("width", 15)
         .attr("height", 15)
-        .attr("fill", color(file));
+        .attr("fill", colorMapping[file]);
 
     const legendText = legendRow.append("text")
         .attr("x", 20)
