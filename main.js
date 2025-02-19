@@ -270,7 +270,7 @@ function drawLineChart() {
     legend.append("text")
     .attr("x", 0)
     .attr("y", -10) 
-    .attr("font-size", "14px")
+    .attr("font-size", "12px")
     .attr("font-weight", "bold")
     .text("Click Below to Filter by Groups");
 
@@ -302,7 +302,7 @@ function drawLineChart() {
         .attr("x", 20)
         .attr("y", 12)
         .text(fileToGroup[file])
-        .attr("font-size", "12px")
+        .attr("font-size", "10px")
         .attr("fill", "black");
     });
 
