@@ -1,4 +1,4 @@
-const files = ["als1.csv", "control1.csv", "hunt2.csv", "park3.csv"];
+const files = ["als1.csv", "hunt2.csv","control1.csv", "park3.csv"];
 const folder = "csv_files/";
 
 let allData = {};
@@ -190,7 +190,6 @@ function drawLineChart() {
     .attr("stroke", "lightgray")
     .attr("stroke-dasharray", "2,2");
 
-    // Add horizontal gridlines
     g.selectAll(".y-gridline")
         .data(yScale.ticks())
         .enter().append("line")
@@ -264,7 +263,7 @@ function drawLineChart() {
 
     legend.append("text")
     .attr("x", 0)
-    .attr("y", -10) // Position above the legend items
+    .attr("y", -10) 
     .attr("font-size", "11px")
     .attr("font-weight", "bold")
     .text("Click to Filter by Groups");
@@ -272,15 +271,14 @@ function drawLineChart() {
     let visibilityState = {};
 
     files.forEach((file, index) => {
-        visibilityState[file] = true; // Initially, all lines are visible
+        visibilityState[file] = true; 
 
     const legendRow = legend.append("g")
     .attr("transform", `translate(0, ${index * 20})`)
     .style("cursor", "pointer")
     .on("click", function() {
-        visibilityState[file] = !visibilityState[file]; // Toggle visibility
+        visibilityState[file] = !visibilityState[file]; 
 
-        // Update the line's visibility
         const path = paths[index];
         if (visibilityState[file]) {
             path.style("display", null);
@@ -288,7 +286,6 @@ function drawLineChart() {
             path.style("display", "none");
         }
 
-        // Update legend text style (dim if hidden)
         legendText.style("opacity", visibilityState[file] ? 1 : 0.5);
     });
 
