@@ -7,6 +7,8 @@ body {
 
 svg {
     border: 1px solid #ccc;
+    width: 91%;
+    height: 60%;
 }
 
 .container {

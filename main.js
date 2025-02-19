@@ -1,4 +1,4 @@
-const files = ["als1.csv", "control1.csv", "hunt1.csv", "park1.csv"];
+const files = ["als1.csv", "control1.csv", "hunt2.csv", "park3.csv"];
 const folder = "csv_files/";
 
 let allData = {};
@@ -47,7 +47,7 @@ function manualSliderUpdate() {
 function drawLineChart() {
     d3.select("#chart").html("");
 
-    const width = 800;
+    const width = 1100;
     const height = 500;
     const margin = { top: 50, right: 150, bottom: 70, left: 80 };
 
@@ -158,10 +158,10 @@ function drawLineChart() {
         .style("display", "none");
 
     const fileToGroup = {
-        "als1.csv": "ALS",
-        "control1.csv": "Control",
-        "hunt1.csv": "Huntington",
-        "park1.csv": "Parkinson"
+        "als1.csv": "ALS (Amyotrophic Lateral Sclerosis)",
+        "control1.csv": "Control (Healthy)",
+        "hunt2.csv": "Huntington's Disease",
+        "park3.csv": "Parkinson's Disease"
     };
 
     function updateTooltipVisibility(isVisible) {
@@ -178,6 +178,29 @@ function drawLineChart() {
       tooltip.html(`Group: ${group}<br>Elapsed Time: ${d.Elapsed_Time}<br>Left Stride Interval: ${d.Left_Stride_Interval}`)
         .style("background", lineColor);
     }
+
+    g.selectAll(".x-gridline")
+    .data(xScale.ticks())
+    .enter().append("line")
+    .attr("class", "x-gridline")
+    .attr("x1", d => xScale(d))
+    .attr("x2", d => xScale(d))
+    .attr("y1", margin.top)
+    .attr("y2", height - margin.bottom)
+    .attr("stroke", "lightgray")
+    .attr("stroke-dasharray", "2,2");
+
+    // Add horizontal gridlines
+    g.selectAll(".y-gridline")
+        .data(yScale.ticks())
+        .enter().append("line")
+        .attr("class", "y-gridline")
+        .attr("x1", margin.left)
+        .attr("x2", width - margin.right)
+        .attr("y1", d => yScale(d))
+        .attr("y2", d => yScale(d))
+        .attr("stroke", "lightgray")
+        .attr("stroke-dasharray", "2,2");
 
     paths = Object.keys(allData).map(file => {
         const line = d3.line()
@@ -225,7 +248,7 @@ function drawLineChart() {
         .attr("y", height - 10)
         .style("text-anchor", "middle")
         .style("font-size", "14px")
-        .text("Elapsed Time (s)");
+        .text("Elapsed Time (seconds)");
 
     g.append("text")
         .attr("class", "y-axis-label")
@@ -234,26 +257,52 @@ function drawLineChart() {
         .style("text-anchor", "middle")
         .style("font-size", "14px")
         .style("transform", "rotate(-90deg)")
-        .text("Left Stride Interval (s)");
+        .text("Left Stride Interval (seconds)");
 
     const legend = svg.append("g")
-        .attr("transform", `translate(${width - margin.right + 20}, ${margin.top})`);
+    .attr("transform", `translate(${width - margin.right + 20}, ${margin.top})`);
+
+    legend.append("text")
+    .attr("x", 0)
+    .attr("y", -10) // Position above the legend items
+    .attr("font-size", "11px")
+    .attr("font-weight", "bold")
+    .text("Click to Filter by Groups");
+
+    let visibilityState = {};
 
     files.forEach((file, index) => {
-        const legendRow = legend.append("g")
-            .attr("transform", `translate(0, ${index * 20})`);
+        visibilityState[file] = true; // Initially, all lines are visible
 
-        legendRow.append("rect")
-            .attr("width", 15)
-            .attr("height", 15)
-            .attr("fill", color(file));
+    const legendRow = legend.append("g")
+    .attr("transform", `translate(0, ${index * 20})`)
+    .style("cursor", "pointer")
+    .on("click", function() {
+        visibilityState[file] = !visibilityState[file]; // Toggle visibility
 
-        legendRow.append("text")
-            .attr("x", 20)
-            .attr("y", 12)
-            .text(fileToGroup[file])
-            .attr("font-size", "12px")
-            .attr("fill", "black");
+        // Update the line's visibility
+        const path = paths[index];
+        if (visibilityState[file]) {
+            path.style("display", null);
+        } else {
+            path.style("display", "none");
+        }
+
+        // Update legend text style (dim if hidden)
+        legendText.style("opacity", visibilityState[file] ? 1 : 0.5);
+    });
+
+    legendRow.append("rect")
+        .attr("width", 15)
+        .attr("height", 15)
+        .attr("fill", color(file));
+
+    const legendText = legendRow.append("text")
+        .attr("x", 20)
+        .attr("y", 12)
+        .text(fileToGroup[file])
+        .attr("font-size", "12px")
+        .attr("fill", "black");
     });
 
     const playPauseBtn = document.getElementById('playPauseBtn');
