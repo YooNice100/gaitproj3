@@ -159,8 +159,8 @@ function drawLineChart() {
 
     const fileToGroup = {
         "als1.csv": "ALS (Amyotrophic Lateral Sclerosis)",
-        "control1.csv": "Control (Healthy)",
         "hunt2.csv": "Huntington's Disease",
+        "control1.csv": "Control (Healthy)",
         "park3.csv": "Parkinson's Disease"
     };
 
