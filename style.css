@@ -117,7 +117,17 @@ select {
     color: white;
 }
 
+.chart-description {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-
-
-
+.description-content {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}

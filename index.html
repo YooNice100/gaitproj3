@@ -25,6 +25,31 @@
             </div>
         </div>
 
+        <div class="visualization" id="chart"></div>
+
+<!-- Scrollable Description Section -->
+    <div class="chart-description">
+        <h2>Understanding Gait Analysis in Neurodegenerative Diseases</h2>
+        <div class="description-content">
+            <p>
+                Our interactive data visualization shows the differences in gait in neurodegenerative diseases. The objective was to show how gait differs between groups in an interactive and engaging way. Since the dataset included time-based metrics such as elapsed time and stride intervals, we wanted viewers to be able to interact with this dynamically. Our data visualization is targeted at medical professionals and patients. We aimed to provide an experience that would allow medical professionals and patients to interact with and analyze the data effectively. Understanding these gait differences is clinically important because it can aid in early diagnosis, tracking disease progression, and evaluating treatment efficacy. Medical professionals could use this visualization to compare stride intervals among different conditions, helping them identify gait diseases more easily. Our data visualization could provide a better explanation as to how much gait strides differ between groups.
+            </p>
+            <p>
+                Initially, we considered creating a stick figure animation with a few stick figures that would walk across the screen, visually representing the different gaits for each group. The idea was to create a more dynamic and engaging experience by showing the movement patterns. However, after discussing that idea, we realized it wouldn't be the most effective way to present the data. The stick figures would not allow the people to easily understand key metrics. Also, it would be challenging to make the visualization interactive enough to allow users to play around with the data and understand the graph further, filter specific time intervals, or zoom in on specific patterns. The stick figure approach also lacked flexibility in terms of showing more details about each group's gait.
+            </p>
+            <p>
+                After evaluating this, we shifted to making an interactive line chart over other charts like a scatterplot for our visualization because we were working with time series data. The line chart made it possible for users to effectively see the trends and variations in stride interval over time, which was important for understanding the differences in gait between the groups and how neurodegenerative diseases affect the amount of time it takes for them to walk somewhere. For each group, we assigned them a unique color so that viewers could distinguish them at first glance. We used a vibrant and non-clashing color palette that’s easy to differentiate for multiple groups. We also specifically chose green for the control (healthy) group because green is typically associated with being healthy so it makes it more intuitive. To add an interactive filter element, we used the legend as a checklist for which groups viewers wanted to compare if they didn’t want to look at all 4 groups at once as that can be overwhelming. We also incorporated a zooming feature so that viewers could focus on specific time intervals. This was important because without it, it's hard to compare the trend lines for Huntington’s, Parkinson’s, and the control group since they’re very close together due to the ALS line increasing the y-scale. When you zoom in, you’re able to compare the differences a lot better, especially in areas where the lines are more muddled. Additionally, we also added tooltips as another interactive element to make the data more precise since it’s hard to see the exact left stride interval given only the grid lines. Another feature we included was a timeline slider to manually control the time progress. At first, we only had a pause/play button to animate the graph, but decided that adding a timeline bar would be more precise and convenient because you don’t have to replay the graph until you get to the desired point. The bar also gives viewers the ability to inspect the changes forward and backwards in time. We decided to use the timeline bar to turn it into a moving line chart because unlike a static graph, you can better see how groups like ALS begin lagging behind at any given point along the way due to its longer stride intervals.
+            </p>
+            <p>
+                The work on the project was divided among three team members: Amelia Lei, Eunice Cho, and Derrick Nguyen, each focusing on different aspects. Amelia and Eunice took the lead on implementing the core features, while Derrick handled the design and data cleanup for the graph. Both Amelia and Eunice worked on integrating the interactive features, such as the clickable legend, time frame navigation bar, and tooltip. Everyone worked together on implementing the zooming feature and getting the axis and lines to adjust as the viewer was zooming, and assisted with the play/pause functionality.
+            </p>
+            <p>
+                In total, the team spent around 10 hours developing the application. The most time-consuming part of the project was implementing the zoom feature. We had several challenges in getting the axis and the lines to dynamically adjust as the user zoomed in and out. Initially when zooming, it treated it as a normal zoom where the axis were not locked in place and the lines distances did not adjust accordingly which made the zoom ineffective as it was still hard to compare the difference between stride intervals when lines were close together. Then, we tried to fix our code but the graph’s axis and line data weren’t adjusting in sync, which made it difficult to create a seamless and interactive experience. We spent a lot of time debugging and refining this interaction to make the zoom work smoothly. This issue was challenging because we needed to adjust both the visual elements of the graph (the lines) and the axis, while keeping the user interface intuitive. Once we resolved these issues, we were able to get the zooming effect we wanted, but it took a lot of trial and error.
+            </p>
+        </div>
+    </div>
+
+
     <script src="main.js"></script>
 </body>
 </html>
