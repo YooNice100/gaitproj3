@@ -163,7 +163,6 @@ function drawLineChart() {
         .style("background", "lightgray")
         .style("padding", "5px")
         .style("border-radius", "5px")
-        .style("display", "none");
 
     const fileToGroup = {
         "als1.csv": "ALS (Amyotrophic Lateral Sclerosis)",
@@ -228,13 +227,12 @@ function drawLineChart() {
                 const closestData = allData[file].reduce((prev, curr) => 
                     Math.abs(curr.Elapsed_Time - xValue) < Math.abs(prev.Elapsed_Time - xValue) ? curr : prev
                 );
-                tooltip.html(`
-                    <strong>${fileToGroup[file]}</strong><br>Elapsed Time: ${closestData.Elapsed_Time.toFixed(2)}s<br>Left Stride Interval: ${closestData.Left_Stride_Interval.toFixed(3)}s`)
-                .style("display", "block")
-                .style("left", `${event.pageX + 10}px`)
-                .style("top", `${event.pageY - 20}px`);
+                
+                updateTooltipContent(closestData, colorMapping[file], file);
+                updateTooltipVisibility(true);
+                updateTooltipPosition(event);
             })
-            .on("mouseout", () => tooltip.style("display", "none"));
+            .on("mouseout", () => updateTooltipVisibility(false));
 
         const length = path.node().getTotalLength();
         path.attr("stroke-dasharray", `${length} ${length}`)
